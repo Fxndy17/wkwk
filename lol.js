@@ -390,8 +390,10 @@ const headers = {
 
 axios.get(target, { httpAgent: agent, headers: headers })
 .then(response => {
+	console.log("done")
 })
 .catch(error => {
+	console.log(error.message)
 sendRequest(target, agent);
 });
 }
